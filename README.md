@@ -2,7 +2,7 @@
 
 > Manage your todos using kubernetes
 
-![gif](https://i.imgur.com/cXtpwwc.gif)
+![image](https://images.meain.io/dump/1589308299.png)
 
 ## Why?
 
