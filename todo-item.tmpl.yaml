@@ -3,6 +3,6 @@ kind: Todo
 metadata:
     name: TODO_NAME
     labels:
-        status: done # todo|done
+        status: todo # todo|done
 spec:
     message: TODO_MESSAGE

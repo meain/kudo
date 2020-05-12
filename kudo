@@ -16,21 +16,31 @@ display_all() {
 mark_done() {
     TODOS="$(display_all)"
     echo "$TODOS"
-    printf "\nChoose todo to mark as done: "
+    printf "■ Choose todo to mark as done: "
     read -r
-    MT="$(echo "$TODOS" | awk "NR==$REPLY{print \$0}" |
-        sed 's/^[0-9]* //' | cut -d'[' -f1 | sed 's/\ *$//')"
-    k label todos "$MT" status=done --overwrite
+    MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
+        sed 's/^Name:         //' | sed 's/\ *$//')"
+    k label todos "$MT" status=done --overwrite >/dev/null && echo "Todo marked as done"
 }
 
 mark_undone() {
     TODOS="$(display_all)"
     echo "$TODOS"
-    printf "\nChoose todo to mark as undone: "
+    printf "■ Choose todo to mark as undone: "
     read -r
-    MT="$(echo "$TODOS" | awk "NR==$REPLY{print \$0}" |
-        sed 's/^[0-9]* //' | cut -d'[' -f1 | sed 's/\ *$//')"
-    k label todos "$MT" status=todo --overwrite
+    MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
+        sed 's/^Name:         //' | sed 's/\ *$//')"
+    k label todos "$MT" status=todo --overwrite >/dev/null && echo "Todo marked as undone"
+}
+
+delete_todo() {
+    TODOS="$(display_all)"
+    echo "$TODOS"
+    printf "■ Choose todo to mark as undone: "
+    read -r
+    MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
+        sed 's/^Name:         //' | sed 's/\ *$//')"
+    k delete todos "$MT" >/dev/null && echo "Todo deleted"
 }
 
 show_help() {
@@ -58,5 +68,6 @@ add) add_todo ;;
 list) display_all ;;
 "done") mark_done ;;
 "undone") mark_undone ;;
+"delete") delete_todo ;;
 *) show_help ;;
 esac
