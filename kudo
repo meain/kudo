@@ -3,11 +3,14 @@
 set -e
 
 alias k=kubectl
-# k create ns todos
-# k apply -f todo.yaml  # create crd
+
+if ! k get ns | grep -q todos; then
+    k create ns todos
+    k apply -f todo.yaml  --namespace todos # create crd
+fi
 
 display_all() {
-    k describe todos | grep -E '^(  Message:  |Labels:       )' |
+    k describe todos --namespace todos | grep -E '^(  Message:  |Labels:       )' |
         sed 's/^ *.*:  *//' |
         sed 's/^status=todo$/[TODO]/;s/^status=done/[DONE]/' |
         sed 'N;s/\n/ /' | awk '{print NR" "$0}'
@@ -18,9 +21,9 @@ mark_done() {
     echo "$TODOS"
     printf "■ Choose todo to mark as done: "
     read -r
-    MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
+    MT="$(k describe todos --namespace todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
         sed 's/^Name:         //' | sed 's/\ *$//')"
-    k label todos "$MT" status=done --overwrite >/dev/null && echo "Todo marked as done"
+    k label todos "$MT" status=done --overwrite --namespace todos >/dev/null && echo "Todo marked as done"
 }
 
 mark_undone() {
@@ -28,9 +31,9 @@ mark_undone() {
     echo "$TODOS"
     printf "■ Choose todo to mark as undone: "
     read -r
-    MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
+    MT="$(k describe todos --namespace todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
         sed 's/^Name:         //' | sed 's/\ *$//')"
-    k label todos "$MT" status=todo --overwrite >/dev/null && echo "Todo marked as undone"
+    k label todos "$MT" status=todo --overwrite --namespace todos >/dev/null && echo "Todo marked as undone"
 }
 
 delete_todo() {
@@ -38,9 +41,9 @@ delete_todo() {
     echo "$TODOS"
     printf "■ Choose todo to delete: "
     read -r
-    MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
+    MT="$(k describe todos --namespace todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
         sed 's/^Name:         //' | sed 's/\ *$//')"
-    k delete todos "$MT" >/dev/null && echo "Todo deleted"
+    k delete todos "$MT" --namespace todos >/dev/null && echo "Todo deleted"
 }
 
 show_help() {
@@ -60,7 +63,7 @@ add_todo() {
     printf "Message: "
     read -r
     sed "s|TODO_MESSAGE|$REPLY|;s|TODO_NAME|todo-$(date '+%s')|" ./todo-item.tmpl.yaml |
-        k apply -f -
+        k apply --namespace todos -f -
 }
 
 case "$1" in

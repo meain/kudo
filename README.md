@@ -14,6 +14,8 @@ I don't know, it is up to you. It works. 🤷
 
 ## Usage
 
+We create a namespace called todo for all the stuff that kudo does
+
 ```
 Usage: kudo <command>
 Commands:
@@ -23,3 +25,8 @@ done   : mark a todo as done
 undone : mark a todo as undone
 delete : delete a todo
 ```
+
+## Uninstall
+
+k delete ns todos
+k delete crd todos.meain.io
