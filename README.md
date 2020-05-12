@@ -2,7 +2,7 @@
 
 > Manage your todos using kubernetes
 
-![image](https://images.meain.io/dump/1589308299.png)
+![image](https://i.imgur.com/jgh0fZw.png)
 
 ## Why?
 
@@ -28,5 +28,5 @@ delete : delete a todo
 
 ## Uninstall
 
-k delete ns todos
-k delete crd todos.meain.io
+- k delete ns todos
+- k delete crd todos.meain.io
