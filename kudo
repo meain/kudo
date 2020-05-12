@@ -5,8 +5,8 @@ set -e
 alias k=kubectl
 
 if ! k get ns | grep -q todos; then
-    k create ns todos
-    k apply -f todo.yaml  --namespace todos # create crd
+    k create ns todos >/dev/null
+    k apply -f todo.yaml  --namespace todos >/dev/null # create crd
 fi
 
 display_all() {
@@ -63,7 +63,7 @@ add_todo() {
     printf "Message: "
     read -r
     sed "s|TODO_MESSAGE|$REPLY|;s|TODO_NAME|todo-$(date '+%s')|" ./todo-item.tmpl.yaml |
-        k apply --namespace todos -f -
+        k apply --namespace todos -f - >/dev/null
 }
 
 case "$1" in
