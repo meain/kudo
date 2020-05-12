@@ -1,0 +1,8 @@
+apiVersion: meain.io/v1
+kind: Todo
+metadata:
+    name: TODO_NAME
+    labels:
+        status: done # todo|done
+spec:
+    message: TODO_MESSAGE

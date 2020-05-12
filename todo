@@ -1,0 +1,62 @@
+#!/bin/sh
+
+set -e
+
+alias k=kubectl
+# k create ns todos
+# k apply -f todo.yaml  # create crd
+
+display_all() {
+    k describe todos | grep -E '^(  Message:  |Labels:       )' |
+        sed 's/^ *.*:  *//' |
+        sed 's/^status=todo$/[TODO]/;s/^status=done/[DONE]/' |
+        sed 'N;s/\n/ /' | awk '{print NR" "$0}'
+}
+
+mark_done() {
+    TODOS="$(display_all)"
+    echo "$TODOS"
+    printf "\nChoose todo to mark as done: "
+    read -r
+    MT="$(echo "$TODOS" | awk "NR==$REPLY{print \$0}" |
+        sed 's/^[0-9]* //' | cut -d'[' -f1 | sed 's/\ *$//')"
+    k label todos "$MT" status=done --overwrite
+}
+
+mark_undone() {
+    TODOS="$(display_all)"
+    echo "$TODOS"
+    printf "\nChoose todo to mark as undone: "
+    read -r
+    MT="$(echo "$TODOS" | awk "NR==$REPLY{print \$0}" |
+        sed 's/^[0-9]* //' | cut -d'[' -f1 | sed 's/\ *$//')"
+    k label todos "$MT" status=todo --overwrite
+}
+
+show_help() {
+    echo "       # kudo #"
+    echo "Your todo's on Kubernetes"
+    echo ""
+    echo "Usage: kudo <command>"
+    echo "Commands:"
+    echo "list   : list all incomplete todos"
+    echo "new    : add a new todo"
+    echo "done   : mark a todo as done"
+    echo "undone : mark a todo as undone"
+    echo "delete : delete a todo"
+}
+
+add_todo() {
+    printf "Message: "
+    read -r
+    sed "s|TODO_MESSAGE|$REPLY|;s|TODO_NAME|todo-$(date '+%s')|" ./todo-item.tmpl.yaml |
+        k apply -f -
+}
+
+case "$1" in
+add) add_todo ;;
+list) display_all ;;
+"done") mark_done ;;
+"undone") mark_undone ;;
+*) show_help ;;
+esac
