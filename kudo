@@ -36,7 +36,7 @@ mark_undone() {
 delete_todo() {
     TODOS="$(display_all)"
     echo "$TODOS"
-    printf "■ Choose todo to mark as undone: "
+    printf "■ Choose todo to delete: "
     read -r
     MT="$(k describe todos | grep -E '^Name:         ' | awk "NR==$REPLY{print \$0}" |
         sed 's/^Name:         //' | sed 's/\ *$//')"
